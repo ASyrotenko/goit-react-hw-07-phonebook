@@ -1,16 +1,23 @@
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { deleteContactRedux } from 'redux/contactsSlice/contactsSlice';
+import {
+  fetchContacts,
+  deleteContact,
+} from 'redux/contactsSlice/contactsOperations';
 
 import { ReactComponent as DeleteIcon } from '../icons/delete.svg';
 
 import styles from './contact-list.module.css';
 
 const ContactList = () => {
-  const contactsRedux = useSelector(state => state.contacts);
+  const contactsRedux = useSelector(state => state.contacts.items);
   const filterRedux = useSelector(state => state.filter);
-
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const filterContacts = () => {
     const normalizedFilter = filterRedux.toLowerCase();
@@ -23,14 +30,14 @@ const ContactList = () => {
 
   return (
     <ul className={styles.contactList}>
-      {filtredContacts.map(({ id, name, number }) => (
+      {filtredContacts.map(({ id, name, phone }) => (
         <li key={id} className={styles.contactItem}>
-          {name}: {number}
+          {name}: {phone}
           <button
             type="button"
             className={styles.contactBtn}
             onClick={() => {
-              dispatch(deleteContactRedux(id));
+              dispatch(deleteContact(id));
             }}
           >
             <DeleteIcon width="20" />

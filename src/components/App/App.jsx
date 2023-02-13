@@ -6,8 +6,6 @@ import ContactList from '../ContactList';
 
 import styles from './app.module.css';
 
-// const initialContacts = JSON.parse(localStorage.getItem('contacts'));
-
 export default function App() {
   const contactsRedux = useSelector(state => state.contacts);
 

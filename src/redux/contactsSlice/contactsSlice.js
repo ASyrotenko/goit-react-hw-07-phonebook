@@ -1,29 +1,51 @@
 import { createSlice } from '@reduxjs/toolkit';
-import shortid from 'shortid';
+import { fetchContacts, addContact, deleteContact } from './contactsOperations';
+
+const initialState = {
+  items: [],
+  loading: false,
+  error: null,
+};
 
 export const contactsSlicer = createSlice({
   name: 'contacts',
-  initialState: [],
-  reducers: {
-    addContactRedux(state, action) {
-      const contact = {
-        id: shortid.generate(),
-        name: action.payload.name,
-        number: action.payload.number,
-      };
-      const normalizedName = action.payload.name.toLowerCase();
-      const findeName = state.some(contact =>
-        contact.name.toLowerCase().includes(normalizedName)
-      );
-      if (findeName) {
-        return alert(`${action.payload.name} is already in contacts.`);
-      }
-      return [...state, contact];
+  initialState,
+  extraReducers: {
+    [fetchContacts.pending]: store => {
+      store.loading = true;
+      store.error = null;
     },
-    deleteContactRedux(state, action) {
-      return state.filter(contact => contact.id !== action.payload);
+    [fetchContacts.fulfilled]: (store, { payload }) => {
+      store.loading = false;
+      store.items = payload;
+    },
+    [fetchContacts.rejected]: (store, { payload }) => {
+      store.loading = false;
+      store.error = payload;
+    },
+    [addContact.pending]: store => {
+      store.loading = true;
+      store.error = null;
+    },
+    [addContact.fulfilled]: (store, { payload }) => {
+      store.loading = false;
+      store.items.push(payload);
+    },
+    [addContact.rejected]: (store, { payload }) => {
+      store.loading = false;
+      store.error = payload;
+    },
+    [deleteContact.pending]: store => {
+      store.loading = true;
+      store.error = null;
+    },
+    [deleteContact.fulfilled]: (store, { payload }) => {
+      store.loading = false;
+      store.items = store.items.filter(item => item.id !== payload);
+    },
+    [deleteContact.rejected]: (store, { payload }) => {
+      store.loading = false;
+      store.error = payload;
     },
   },
 });
-
-export const { addContactRedux, deleteContactRedux } = contactsSlicer.actions;
